@@ -1,4 +1,4 @@
-# Reverse-built software specifications
+# OAG developer understanding — reverse-built software specifications
 
 Status: initial baseline, proposed for review. This is a specification for the
 analysis process and its deliverables, not an implementation or a completed
@@ -22,6 +22,25 @@ The original request is preserved in [OPERATOR-INTENT.md](OPERATOR-INTENT.md).
 Everything below is an initial interpretation, open to revision through actual
 use. No particular architecture, programming language, or target project is
 assumed.
+
+## Analysis targets
+
+This specification covers the following public GitHub repositories:
+
+| Repository | Initial orientation (verify against implementation) |
+| --- | --- |
+| [webdawg/open-agent-graph](https://github.com/webdawg/open-agent-graph) | Core semantic graph for AI agents. |
+| [webdawg/oag-mesh](https://github.com/webdawg/oag-mesh) | Cluster bridging and federated corroboration. |
+| [webdawg/oag-listend](https://github.com/webdawg/oag-listend) | Audio-serving daemon. |
+| [webdawg/oag-collisions](https://github.com/webdawg/oag-collisions) | Role to establish through analysis; no repository description was available. |
+| [webdawg/oag-imagination-random-data-compute](https://github.com/webdawg/oag-imagination-random-data-compute) | Described as “helps ai dream”; mechanisms to establish through analysis. |
+| [webdawg/data-roads](https://github.com/webdawg/data-roads) | RFC/paper built on OAG and oag-mesh; distinguish proposals from executable implementation. |
+
+Analyze each at a recorded commit and explain evidenced relationships across the
+set. Shared naming is not proof of implemented integration. Selecting these
+repositories authorizes the documentation scope, not deployments or live changes.
+All documents and outputs belonging to this specification stay within
+`oag-developer_understanding/` in the containing multi-spec repository.
 
 ## 2. What success means
 
@@ -53,7 +72,9 @@ ignore repository instructions, permissions, security, or existing evidence.
 Before analyzing, record:
 
 1. Authorized target repository or repositories and publication destination.
-2. Exact commit SHA for every target, branch, and working-tree status.
+2. Exact commit SHA for every target, branch, and working-tree status. Also record
+   resolved cross-repository dependency revisions from lockfiles; a dependency on
+   a branch does not mean the locked build uses that branch's current HEAD.
 3. Scope: included subsystems, excluded content, and external dependencies.
 4. Applicable repository instructions and any approved execution permissions.
 5. Available tools and limitations, including unavailable services or hardware.
@@ -115,7 +136,13 @@ relevant tests or isolated experiments and record exact commands, environment,
 results, and limits. Test names are not proof that their claimed behavior was
 executed successfully. Passing unit tests are not proof of production behavior.
 
-Investigate contradictions. Document the observed implementation separately
+Investigate contradictions, including comments that no longer match their function
+bodies. Separate library capability, actual caller paths, and deployed behavior.
+Do not equate signature sniffing with full validation or asynchronous writes with
+power-loss durability. For RFC-only targets, explain proposed contracts and missing
+mechanisms rather than inventing runnable behavior.
+
+Document the observed implementation separately
 from desired behavior and proposed fixes. Identify dead code, unreachable
 features, placeholder implementations, and untested branches as findings only
 when evidence supports that classification.
@@ -192,7 +219,7 @@ pinned revision before publication. Do not imply full coverage from sampling.
 Proposed layout for analyses written to this repository:
 
 ```text
-specs/<owner>/<repository>/
+oag-developer_understanding/specs/<owner>/<repository>/
   README.md             # navigation, target revision, scope and reading order
   SPEC.md               # coherent system specification and detailed explanations
   EVIDENCE.md           # claim ledger and verification results
@@ -206,7 +233,7 @@ Do not create empty boilerplate files merely to satisfy the layout. Link related
 repositories without assuming their integration works; cross-repository claims
 must identify and inspect the relevant revisions of each participant.
 
-Keep this root specification separate from generated target analyses. Target
+Keep this project specification separate from generated target analyses. Target
 repositories remain authoritative for implementation; each analysis is a
 revision-scoped explanation, not a promise about the latest branch forever.
 
@@ -256,11 +283,15 @@ conceal uncertainty or claim success.
 
 ## 10. Initial scope and next experiment
 
-No target analysis has been performed. The first experiment is to select one
-authorized repository and pinned revision, perform discovery, and produce a
-small but substantive first analysis using this baseline. The Open Agent Graph
-repositories are possible candidates discussed by the operator, not automatically
-authorized targets for execution or blanket multi-repository analysis.
+A first selective research pass is recorded in [RESEARCH.md](RESEARCH.md), with
+all six target revisions pinned. [DEVELOPER-GUIDE.md](DEVELOPER-GUIDE.md) explains
+selected source-backed mechanisms and their limits. No target tests or services
+have been run; full analysis and independent review remain pending.
+
+The next experiment is a complete API-to-storage vertical slice in
+`webdawg/open-agent-graph`, followed by deeper coverage of the other repositories
+and their evidenced relationships. This order can change with operator direction.
+Target execution still requires the permissions and safeguards in section 3.
 
 Questions to resolve through that first exercise:
 

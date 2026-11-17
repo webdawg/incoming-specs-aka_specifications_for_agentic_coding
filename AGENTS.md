@@ -1,24 +1,16 @@
-# Agent entry point
+# Multi-spec repository instructions
 
-Read `OPERATOR-INTENT.md`, `SPEC.md`, and `README.md` before contributing.
+Read `README.md`, then the selected specification folder's `AGENTS.md`, requirements,
+and current-state documents before working. Each folder is an independent project;
+do not apply one project's subject matter or targets to all specifications.
 
-- Preserve the quoted operator request verbatim. Keep interpretations and later
-  refinements separate from that historical record.
-- This public repository develops a reverse-specification methodology and hosts
-  revision-scoped analyses. Do not confuse its methodology with a specification
-  of a target system that has not yet been examined.
-- Confirm target, revision, scope, and execution permissions before analysis.
-  Follow target-local instructions and preserve concurrent work.
-- Explain mechanisms in enough detail that developers can reason without opening
-  source. References support explanations; they do not replace them.
-- Follow the evidence and uncertainty requirements in `SPEC.md`. Never fabricate
-  author intent, test results, implementation status, or completeness.
-- Do not modify target code or run consequential operations as part of discovery
-  without separate authorization. Protect secrets and private material even if
-  encountered in an otherwise public source.
-- Keep target analyses under `specs/<owner>/<repository>/`. Maintain their scope,
-  coverage, review status, and next steps as described in `SPEC.md`.
-- Inspect Git status and exact staged diffs before committing. Publish only
-  authorized content and verify the remote commit after pushing.
+Keep project-specific research, outputs, evidence, and handoffs inside its folder.
+Root content is limited to the shared license, index, and general instructions.
+Preserve original operator statements and distinguish interpretations from them.
 
-Project license: GNU AGPL version 3 or later (`AGPL-3.0-or-later`).
+This repository is public. Do not publish credentials, private operational details,
+raw session exports, or target source checkouts. Inspect exact staged changes,
+preserve concurrent work, and verify publication on the intended remote branch.
+Do not claim unexecuted tests, completed research, or implemented proposals.
+
+License: AGPL-3.0-or-later.
