@@ -92,6 +92,24 @@ authorized or feasible. Never publish secrets, private configuration, personal
 data, or proprietary source into this public repository. Public source alone
 does not make every embedded value safe to repeat.
 
+### Execution and sensitive findings
+
+Before running target builds or tests, record the approved execution scope and
+isolation mechanism. Builds can execute code through build scripts, procedural
+macros, dependency tooling and hooks, not just the final application. Use a
+disposable environment with no production mounts or credentials; constrain and
+record network access and writable paths. Separate dependency retrieval from
+restricted execution where practical. If adequate isolation is unavailable,
+continue static analysis and report the limitation rather than quietly running
+against the host environment.
+
+If sensitive material is discovered, do not reproduce it in public notes, tool
+output or commits. Pause the affected publication, notify the operator through
+an appropriate private channel, and agree on handling. Do not rotate credentials,
+erase history or change target systems without separate authorization. Unrelated
+safe analysis may continue; document only a sanitized coverage limitation when
+needed, without exposing the sensitive value or identifying detail.
+
 ## 4. Method: reconstruct before summarizing
 
 ### Phase A — discovery and coverage plan
@@ -103,6 +121,14 @@ why. Explicitly mark omitted areas and their implications.
 
 Identify actual executable paths, not just promising filenames. Determine which
 flags, build features, deployment modes, and versions change those paths.
+
+Maintain a prioritized coverage list of candidate operations and flows. Rank them
+by developer relevance, architectural importance, failure consequences and how
+many important boundaries they illuminate. Record selected, deferred and excluded
+items with short reasons. Start with a concrete high-value flow, not an arbitrary
+file order; revisit priorities as source inspection reveals new dependencies.
+Coverage is an explicit inventory, not a claim that representative samples cover
+every behavior.
 
 ### Phase B — reconstruct the system model
 
@@ -158,7 +184,11 @@ documents. Record unanswered questions and revise the analysis accordingly.
 
 If no independent reviewer is available, label the check as self-review; do not
 claim independent validation. Publish bounded partial results rather than
-pretending gaps are complete.
+pretending gaps are complete. Final acceptance requires a separate reviewer—an
+operator or another agent/session—answering the comprehension questions from the
+published documentation alone, without source or unpublished authoring notes.
+Record answers and unresolved failures. This independent understanding check is
+separate from source-based factual verification; both matter.
 
 ## 5. Required content of a target specification
 
@@ -251,6 +281,11 @@ verified or that all layers form one working deployment.
 
 Assign stable claim identifiers to consequential claims, especially guarantees,
 security properties, persistence behavior, and externally visible contracts.
+Prefer one claim per meaningful externally observable behavior, contract, or
+security/durability property, rather than per function or sentence. Split claims
+when their evidence, revision scope or uncertainty differs materially. Keep
+supporting bookkeeping subordinate to the explanation.
+
 Maintain an evidence ledger with these fields:
 
 | Field | Meaning |
@@ -275,6 +310,12 @@ An evidence tag is not a correctness guarantee. A claim can have several kinds
 of supporting evidence and still have limits. Recheck citations against the
 pinned revision before publication. Do not imply full coverage from sampling.
 
+For each consequential contradiction, record the conflicting claims, evidence,
+reader impact, resolution status, and next action or responsible role. Distinguish
+further source investigation from an operator decision about desired behavior.
+A decision about intent does not change observed implementation. Explicitly
+justify any deferred or unresolved discrepancy rather than silently parking it.
+
 ## 7. Deliverables and repository layout
 
 Proposed layout for analyses written to this repository:
@@ -294,6 +335,12 @@ substantive research is produced: an index/topology, a connection register, and
 individual flow narratives with diagrams and evidence. Link repository-level
 mechanisms into those flows instead of duplicating divergent explanations.
 Until those documents exist, track the work and gaps in `RESEARCH.md`.
+
+A first chapter may combine its flow, diagram, connection table, evidence and
+failure cases in one document. Scope artifacts to the flow actually examined and
+mark broader coverage pending. Split documents when navigation or reuse benefits,
+not to satisfy a file-count target. Whole-stack completeness remains the final
+objective, not a prerequisite for publishing useful partial research.
 
 Optional supporting documents and diagrams may be added beneath that directory.
 Do not create empty boilerplate files merely to satisfy the layout. Link related
@@ -322,7 +369,27 @@ and push only the authorized analysis. Report local versus remote state honestly
 
 ## 9. Acceptance and comprehension checks
 
-A baseline analysis is ready for review when:
+### Chapter-level completion
+
+A single-flow chapter is ready for interim publication when:
+
+- Its scope, pinned revisions and excluded branches are explicit.
+- A concrete example explains inputs, transformations, state changes, outputs,
+  trust checks, relevant connections and return paths without requiring source.
+- Important failure and retry behavior is explained, or specific gaps are labeled.
+- Consequential claims have evidence and conflicting evidence is visible.
+- A comprehension check records what the reader could answer and what remains
+  unresolved; self-review is labeled as such.
+- Publication checks pass and the next investigation is recorded.
+
+Unknowns do not block honest interim publication, but unanswered in-scope questions
+prevent claiming complete understanding of that mechanism. Discovery inventories
+and partial drafts may be published with their actual status; they are not finished
+chapters merely because they are committed.
+
+### Comprehensive acceptance
+
+A baseline analysis is ready for comprehensive review when:
 
 - Every required content area is covered or justified as not applicable.
 - Scope, pinned revisions, exclusions, and unverified claims are visible.

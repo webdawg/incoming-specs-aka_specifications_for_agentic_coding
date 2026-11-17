@@ -179,7 +179,22 @@ working stack by assumption. No need to create empty six-repository boilerplate 
 - For RFC-only targets, document requirements and missing mechanisms; do not invent
   an implementation to force a runtime-oriented template to fit.
 
-## Review
+## Specification review and handoff
+
+A separate Claude agent reviewed the public methodology and partial research
+context with tools disabled. It did not inspect target repositories or perform
+the analysis. The methodology now includes prioritized flow selection,
+chapter-level completion, independent comprehension review for final acceptance,
+execution isolation, sensitive-finding handling, contradiction resolution,
+practical evidence granularity and lightweight incremental document structure.
+No arbitrary quota on self-reviewed passes was adopted.
+
+The OAG specification is saved for continuation while the operator starts another
+independent specification. No further target research or execution accompanied
+these methodology changes. Resume from the pinned inputs and next-pass list above,
+rechecking repository state and applicable instructions first.
+
+## Developer-documentation review
 
 Self-review only. This guide can explain the selected mechanisms and family
 boundaries, but cannot yet answer the complete operational, authorization,
