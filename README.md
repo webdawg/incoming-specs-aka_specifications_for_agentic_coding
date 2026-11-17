@@ -9,6 +9,7 @@ and continuation state. This repository is not dedicated to a single specificati
 | Folder | Purpose | State |
 | --- | --- | --- |
 | [oag-developer_understanding](oag-developer_understanding/README.md) | Reverse-build detailed developer understanding of the six Open Agent Graph family repositories. | Baseline plus first source-inspection pass; incomplete. |
+| [oag-location-to-legacy](oag-location-to-legacy/README.md) | Awaiting operator description. | Named; requirements not yet defined. |
 
 See [AGENTS.md](AGENTS.md) before contributing. Keep each project's artifacts
 inside its own folder; add new independent specifications as sibling folders.
