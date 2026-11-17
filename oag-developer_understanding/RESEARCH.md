@@ -137,6 +137,14 @@ state are not publication inputs. No target source was vendored here.
 
 ## Open questions and next passes
 
+**Operator scope clarification:** developer understanding must include how things
+connect and end-to-end data flows across the entire node/cluster stack. The
+whole-stack requirements are now explicit in `SPEC.md`. These flows have not yet
+been traced. Build a connection register from actual callers/receivers, then
+extend the core vertical slice through peer propagation, remote application and
+consumer-visible reads. Investigate cross-cluster paths separately rather than
+assuming core synchronization and mesh bridging are the same protocol.
+
 1. **Core vertical slice:** choose one node/assertion operation. Read its handler,
    authorization, graph service, signing, projector, SQL and relevant tests. Write
    a request-to-state-change walkthrough with concrete synthetic inputs.
@@ -158,7 +166,9 @@ state are not publication inputs. No target source was vendored here.
 Suggested next deliverable:
 `specs/webdawg/open-agent-graph/` with a substantive first vertical-slice spec,
 evidence, coverage and unanswered questions. Keep all such outputs inside this
-OAG folder. No need to create empty six-repository boilerplate now.
+OAG folder. Link that slice into `flows/` as the first substantive whole-stack
+narrative develops. Record every unverified boundary instead of drawing a complete
+working stack by assumption. No need to create empty six-repository boilerplate now.
 
 ## Changes to the methodology motivated by this pass
 

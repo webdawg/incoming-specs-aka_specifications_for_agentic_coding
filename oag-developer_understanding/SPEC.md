@@ -48,6 +48,8 @@ A developer reading the result can explain:
 
 - What the software does, for whom, and where its responsibilities end.
 - How its components collaborate and why their boundaries matter.
+- How data moves end to end across the entire node/cluster stack, including
+  cross-repository connections, return paths, and partial failures.
 - What happens, step by step, during its important operations.
 - What data means, where it lives, and how it changes over time.
 - Which contracts and invariants must remain true.
@@ -186,6 +188,65 @@ Use pseudocode, tables, diagrams, and examples when they clarify behavior. Do no
 replace the specification with copied source or require readers to follow links
 to understand a critical mechanism.
 
+### Whole-stack connections and end-to-end data flows
+
+The developer manual must explain the connected system, not merely assemble six
+independent repository descriptions. A reader must be able to follow a datum from
+its producer through every relevant layer, node and cluster to its final consumer,
+and understand the response, acknowledgment and recovery paths without opening
+source. Not every operation traverses every repository: document the actual path,
+not an invented pipeline that forces all six projects into one sequence.
+
+Required system-level artifacts:
+
+1. **Topology and connection map.** Distinguish repositories, libraries, processes,
+   nodes, clusters, external services and persistent stores. Show what runs where,
+   who initiates each connection, discovery/configuration prerequisites, transport,
+   protocol and compatibility requirements. Separate build dependencies, shared
+   database access and runtime network connections. Define node/peer/cluster terms
+   from implementation rather than treating them as interchangeable.
+2. **Connection register.** Give each significant boundary a stable ID and record
+   both endpoints, their pinned revisions, the actual caller and receiver, payload
+   contract, trust boundary and evidence. Label connections as observed,
+   implementation-supported, proposed, unknown or unsupported by the inspected
+   path. Existence of two compatible-looking APIs is not proof they are wired up.
+3. **Flow catalog and sequence diagrams.** Give each important user-visible or
+   background flow a stable ID, trigger, prerequisites, participants and terminal
+   result. Pair every diagram with a complete prose walkthrough; an arrow labeled
+   “sync” or “process” is not a sufficient explanation.
+4. **Worked data lineage.** Carry a safe synthetic example through every hop.
+   Show identifiers and correlation, payload/schema changes, serialization,
+   signatures/hashes, encryption boundaries, copies, queues, caches, persistence,
+   projections and derived results. Explain what stays identical and what changes.
+5. **Completion and failure semantics.** Identify where work is accepted, committed,
+   acknowledged, replicated, applied and visible. Do not equate local success with
+   cluster-wide propagation or agreement. Explain timeout, retry, duplicate and
+   out-of-order delivery, backpressure, partitions, reconnect, replay and partial
+   completion. State how the caller learns the outcome—or why it cannot know.
+6. **Trust and observability along the path.** Explain identity, authorization and
+   validation at each boundary, what each recipient trusts, and what logs, metrics
+   or identifiers can trace the operation. Distinguish existing instrumentation
+   from instrumentation we would like to have. Keep real deployment secrets out.
+
+Investigate these flow families, documenting actual coverage or explicit gaps:
+
+- Client/agent input through a local node to persistent graph state and response.
+- Peer-to-peer propagation within a cluster, remote application and later reads.
+- Cross-cluster bridge/corroboration exchanges and their return paths.
+- Discovery, membership, routing and synchronization control traffic, distinguished
+  from application data rather than hidden inside a generic network arrow.
+- Imagination routing and contribution/result return; collision analysis inputs
+  and outputs; audio ingestion, retrieval and optional external distribution.
+- Proposed Data Roads ownership/access/custody flows, kept visibly separate from
+  implemented behavior and blocked at any missing integration mechanism.
+
+For every applicable flow, follow both the successful path and meaningful failure
+variants. If a boundary is not implemented or cannot be established, stop the
+implemented trace there, explain the gap, and show any proposed continuation as
+proposed. Preserve version differences and optional deployment modes explicitly.
+This is a requirement for further research, not a claim these flows are already
+verified or that all layers form one working deployment.
+
 ## 6. Evidence and uncertainty
 
 Assign stable claim identifiers to consequential claims, especially guarantees,
@@ -228,6 +289,12 @@ oag-developer_understanding/specs/<owner>/<repository>/
   REVIEW.md             # comprehension checks, reviewer and acceptance status
 ```
 
+Maintain whole-stack documentation in `oag-developer_understanding/flows/` as
+substantive research is produced: an index/topology, a connection register, and
+individual flow narratives with diagrams and evidence. Link repository-level
+mechanisms into those flows instead of duplicating divergent explanations.
+Until those documents exist, track the work and gaps in `RESEARCH.md`.
+
 Optional supporting documents and diagrams may be added beneath that directory.
 Do not create empty boilerplate files merely to satisfy the layout. Link related
 repositories without assuming their integration works; cross-repository claims
@@ -260,6 +327,10 @@ A baseline analysis is ready for review when:
 - Every required content area is covered or justified as not applicable.
 - Scope, pinned revisions, exclusions, and unverified claims are visible.
 - Important behavior is explained end to end with concrete examples.
+- Whole-stack flows cross repository/node/cluster boundaries explicitly, with
+  evidence for each connection and no unexplained handoff between documents.
+- Local completion, remote application and final visibility are distinguished;
+  missing or proposed integration is not presented as working connectivity.
 - Consequential claims have retrievable evidence.
 - Implemented behavior, intended behavior, and proposed changes are separated.
 - Failure paths, operational limits, and security boundaries are addressed.
@@ -275,6 +346,12 @@ A reviewer should then answer, without reading source:
 6. How can the system be started, tested, diagnosed, and recovered?
 7. Which components and contracts would a representative feature change affect?
 8. Which important questions remain unanswered, and why?
+9. Can I trace one datum across all relevant processes, nodes and clusters,
+   identifying each transformation, stored copy, trust check and return message?
+10. If a connection fails after one node commits, what do each participant and
+    the original caller know, and what makes retry or recovery safe—or unsafe?
+11. Which connections are actually wired up at the recorded revisions, which are
+    optional, and which exist only as proposals?
 
 Record answers, supporting specification sections, gaps, and review outcome.
 Use applicable scenarios rather than inventing distributed-system requirements
