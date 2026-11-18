@@ -11,6 +11,7 @@ and continuation state. This repository is not dedicated to a single specificati
 | [oag-developer_understanding](oag-developer_understanding/README.md) | Reverse-build detailed developer understanding of the six Open Agent Graph family repositories. | Baseline plus first source-inspection pass; incomplete. |
 | [oag-behavior](oag-behavior/README.md) | Specify observable OAG behavior: inputs, state transitions, persistence, propagation, failures, and cross-repository flow semantics. | Initial baseline; target inspection pending. |
 | [oag-vote](oag-vote/README.md) | Support humans in understanding and making decisions without silently replacing human judgment or manipulating participation. | Initial baseline; decision model and research pending. |
+| [oag-open_crashes](oag-open_crashes/README.md) | Make crash reports rapidly public for debugging, with a dedicated redaction group protecting privacy before publication. | Initial baseline; redaction model and upload flow pending. |
 | [oag-location-to-legacy](oag-location-to-legacy/README.md) | Location-linked chats/alerts, live plain-text access, Android client and encrypted groups with limited availability. | Initial baseline; research and design decisions pending. |
 
 See [AGENTS.md](AGENTS.md) before contributing. Keep each project's artifacts

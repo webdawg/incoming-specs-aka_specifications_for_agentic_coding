@@ -6,6 +6,29 @@ analysis of any target repository.
 
 License: AGPL-3.0-or-later.
 
+## Foundational requirement: rapid, open debugging access
+
+The OAG system must be designed and analyzed with rapid debugging access as a
+permanent, always-available capability—not as an emergency feature to add later.
+An authorized developer or operator must be able to inspect the state of the
+entire system immediately, including the relevant nodes, processes, event and
+projection state, queues, peer/membership state, configuration, errors, and
+cross-repository flow status. A complete state dump must be available on demand,
+without requiring a special rebuild, a fragile reproduction, or a prolonged
+investigation first.
+
+This requirement applies regardless of the system's current mode or failure
+state. The analysis must document the exact dump/debug entry points, their
+coverage, consistency and timestamp semantics, access controls, performance
+cost, sensitive-data handling, behavior during partial failure, and how a dump
+can be correlated across nodes and repositories. “The system logs something” is
+not sufficient; the goal is immediate, structured, whole-system inspectability.
+
+The capability must remain open and useful to authorized debugging—not hidden
+behind assumptions that only the original implementer can reconstruct. It must
+also be explicit about what is unavailable when a component is dead, partitioned,
+corrupted, or unreachable, rather than claiming an impossible omniscient dump.
+
 ## 1. Purpose
 
 Software developers need to understand software deeply enough to reason about,
