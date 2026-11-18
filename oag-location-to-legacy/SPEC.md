@@ -1,8 +1,9 @@
 # OAG location to legacy
 
-Status: initial requirements baseline for discussion. No implementation or external
-research has been performed for this specification. Proposed structures below are
-interpretations, not settled operator decisions.
+Status: expanded requirements baseline for discussion. No implementation or external
+research has been performed for this specification. The encryption mechanism and
+concrete architecture remain open to change; proposed structures are not settled
+implementation decisions.
 
 License: AGPL-3.0-or-later.
 
@@ -13,9 +14,19 @@ relevant data. Chats, alerts and other records can be associated with places.
 Provide a small Android application and a simple public plain-text interface that
 lists location-linked records in time order and supports live streaming.
 
-People can also “key together”: sharing key material enables a group to read
-otherwise encrypted data. Records are available or served for a limited time.
-The original description is preserved in [OPERATOR-INTENT.md](OPERATOR-INTENT.md).
+People “key together”: sharing access enables a group to decrypt actual encrypted
+records. The public site's plain-text format carries encoded ciphertext, not
+readable group GPS coordinates, chats or alerts. Encryption occurs on the client,
+and the service is not entrusted with content decryption keys. Records are served
+for a limited time. Forward secrecy and recovery after compromise are required
+security goals, subject to explicit threat models and validation.
+
+The encryption architecture must remain changeable. No particular protocol,
+algorithm, library or sharing mechanism is permanently selected. See
+[ENCRYPTION-ARCHITECTURE.md](ENCRYPTION-ARCHITECTURE.md) for requirements, proposed
+boundaries and migration gates. The original description is preserved unchanged
+in [OPERATOR-INTENT.md](OPERATOR-INTENT.md); subsequent clarifications are recorded
+in [DECISIONS.md](DECISIONS.md).
 
 The project name does not yet define what “legacy” means. Integration with OAG
 nodes, mesh routing, storage or event protocols must be researched and specified;
@@ -29,7 +40,9 @@ no existing integration is assumed merely from the name.
   It is not automatically the author's location or proof of physical presence.
 - **Record:** content such as a chat message or alert, with time and location
   associations, visibility, and an availability deadline.
-- **Public plaintext:** content intentionally readable without a group secret.
+- **Public text feed:** readable transport framing containing encoded ciphertext.
+  Public delivery does not make the underlying group content public plaintext.
+  A separate unencrypted-content feature is not required by the current baseline.
 - **Publicly retrievable ciphertext:** encrypted content may travel through a
   public service while only key holders can decrypt it. This is not the same as
   public plaintext, and may still expose metadata.
@@ -45,21 +58,26 @@ These are initial conceptual distinctions, not a final schema or wire protocol.
 ### A. Ask for data at a location
 
 1. The client selects a place or explicitly authorizes obtaining device location.
-2. It sends a location query and appropriate filters to the service.
-3. The service matches eligible, unexpired records using a defined geographic rule.
-4. The response presents public content and, if supported, discoverable encrypted
-   records that the client may be able to decrypt locally.
+2. It selects the appropriate encrypted feed and query strategy. Which geographic
+   information, if any, the server receives must be decided through privacy design.
+3. The service returns eligible, unexpired ciphertext envelopes under the selected
+   routing and discovery policy.
+4. The authorized client decrypts locally and applies any geographic filtering
+   that cannot be performed by the service without revealing protected locations.
 5. The client may follow a live stream for later matching records.
 
-Decide the geographic matching rule, precision, time window, pagination, and
-whether encrypted records can be discovered without group membership.
+Decide geographic matching, precision, time window, pagination and discovery.
+Opaque group feeds with client-side filtering are one candidate; explicitly
+accepted coarse regions are another. The service cannot simply index precise
+coordinates it is not permitted to learn. Do not leak them in URLs, envelope
+headers or public indexes to make the original location-query idea easier.
 
 ### B. Publish a location-linked chat or alert
 
-1. The publisher selects a location, record type, visibility and lifetime.
-2. For a group record, the client encrypts before upload if end-to-end encryption
-   is the selected model. The service must not be described as end-to-end encrypted
-   if it receives plaintext or holds the relevant decryption keys.
+1. The publisher selects a location, record type, group and lifetime.
+2. The client protects the payload before upload using the selected group protocol.
+   Exact coordinates remain inside the encrypted payload. Publishing failure must
+   not trigger an unencrypted fallback; the server does not receive content keys.
 3. The service validates the envelope and publishing permissions, applies bounds
    and abuse controls, and stores or distributes the accepted record.
 4. Matching query results and subscribers receive the record according to policy.
@@ -105,9 +123,11 @@ Specify before implementation:
 
 Research chunked text responses, Server-Sent Events and other suitable approaches.
 Do not assume SSE's wire format is identical to an unframed `text/plain` feed.
-The public plaintext feed must not silently decrypt or expose group content.
-Whether ciphertext envelopes appear there, in a separate feed, or only through
-an authenticated discovery route is an open decision.
+The public text feed carries encoded encrypted envelopes and must not decrypt or
+expose group content. A plain-text client can list/stream these envelopes without
+being able to understand their protected payloads. Readable GPS/chat/alert content
+requires authorized client-side decryption. Discovery rules, routing identifiers,
+control-message delivery and publish authorization remain open.
 
 ## 4. Android application
 
@@ -115,9 +135,11 @@ Keep the initial client small and focused:
 
 - Select a location manually or use permission-based device location.
 - Browse and follow nearby/location-selected chats and alerts.
-- Publish records with an explicit public/group choice and lifetime.
+- Publish encrypted records with an explicit group and lifetime.
 - Join/share a group through the selected key mechanism.
-- Decrypt group content locally if end-to-end encryption is chosen.
+- Decrypt and authenticate group content locally with appropriate secret state.
+- Explain invitation scope, membership changes and recovery/rejoin requirements.
+- Report unsupported encryption versions without silently weakening protection.
 - Display timestamps, location precision, expiry and connection status clearly.
 
 These are candidate MVP capabilities, not a commitment to implement every feature
@@ -169,6 +191,14 @@ For each candidate, document:
 - Forward secrecy, post-compromise recovery, and limitations of each claim.
 - Interoperability, Android support, library maturity, licensing and operational cost.
 
+The protocol choice is revisable, but the security goals are not optional defaults.
+Forward secrecy protects earlier records after their secrets are discarded;
+post-compromise recovery concerns future protection after the required fresh-state
+and membership transitions. Neither protects data already retained by an authorized
+reader or fixes a device the attacker still controls. A permanent shared key alone
+cannot satisfy these goals. Follow the protocol-neutral requirements and migration
+criteria in [ENCRYPTION-ARCHITECTURE.md](ENCRYPTION-ARCHITECTURE.md).
+
 Do not put shared secrets in ordinary location-query URLs or public feed records.
 Research routing identifiers that allow the service to locate relevant ciphertext
 without treating the content decryption key as a public identifier.
@@ -202,7 +232,8 @@ threat model and independently justified mechanism. Do not promise remote erasur
 
 Before implementation, produce:
 
-1. Operator decisions on public/group visibility and the intended expiry promise.
+1. Operator decisions on invitation/admission policy, location discovery and the
+   intended expiry promise; public ciphertext delivery is the current baseline.
 2. A location/query model and synthetic examples of chats and alerts.
 3. A privacy/security threat model and encryption-candidate comparison.
 4. A topology and end-to-end flow description spanning Android, plain-text clients,
@@ -210,6 +241,8 @@ Before implementation, produce:
 5. API contracts with request/response/stream examples, ordering, reconnect and errors.
 6. Android feasibility notes and a deliberately bounded MVP plan.
 7. Acceptance scenarios and unresolved limitations for review.
+8. A versioning and encryption-migration plan, including old clients, offline
+   members, legacy history and downgrade prevention. Selection remains revisable.
 
 Keep research, specifications and future diagrams inside `oag-location-to-legacy/`.
 Use existing OAG implementation evidence when investigating integration, but do not
@@ -225,6 +258,13 @@ Record source versions and distinguish proposed mechanisms from implemented ones
 - Public viewers never receive group plaintext through feeds or error messages.
 - A valid group member decrypts a record; a nonmember cannot using only public data.
   Tampering and replay are handled according to the chosen protocol.
+- Current-key compromise does not expose earlier protected records after intended
+  key deletion; deliberate history retention is identified separately.
+- Following the documented compromise-recovery transition, excluded devices cannot
+  derive keys for subsequent protected records. A leaked invitation is not an
+  irrevocable entitlement to future group secrets.
+- Protocol migration and unsupported-version handling do not silently downgrade
+  encryption, reveal plaintext, or restore revoked access.
 - Expired records are not newly served, including through stream queues and replay.
   Documentation acknowledges that prior recipients can retain copies.
 - The Android client handles permission refusal, network loss, background suspension
@@ -233,8 +273,8 @@ Record source versions and distinguish proposed mechanisms from implemented ones
 
 ## 10. Decisions for the next conversation
 
-1. Does the service offer both fully public plaintext channels and encrypted group
-   channels, or is encryption intended for all content except a public listing?
+1. Should possession of an invitation admit a device immediately, or should an
+   existing member approve it? Who may invite, remove members and initiate recovery?
 2. Does “share a key” mean one reusable group secret, a per-person invitation, or
    a user experience we should implement atop a stronger membership protocol?
 3. Is expiry primarily a serving cutoff, storage deletion, group expiry, or a
