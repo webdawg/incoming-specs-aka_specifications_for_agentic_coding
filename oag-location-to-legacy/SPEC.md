@@ -53,6 +53,51 @@ no existing integration is assumed merely from the name.
 
 These are initial conceptual distinctions, not a final schema or wire protocol.
 
+## Transport independence — governing requirement
+
+The operator's transport directive is preserved verbatim in
+[OPERATOR-INTENT.md](OPERATOR-INTENT.md#transport-directive--verbatim).
+
+**Transport can be anything.** The architecture must allow data exchange between
+clients and posting to public servers without requiring one network, carrier,
+protocol or server topology. The public text site is one delivery interface, not
+the universal wire protocol or mandatory intermediary.
+
+Separate protected application records and group-security operations from carrier
+framing. HTTP, direct sockets, Bluetooth, local networking, radio/mesh, file or QR
+transfer, store-and-forward relays and future carriers are illustrative possibilities,
+not an exhaustive approved list or a claim they are implemented. Binary carriers
+need not base64-encode data merely because the public site uses text.
+
+Required delivery patterns:
+
+- Client to client, without mandatory traversal of the public server.
+- Client to public server for posting, and server to clients for retrieval/streaming.
+- Relayed or delayed delivery where the carrier supports it, including the same
+  protected record arriving over more than one path.
+
+Each implemented carrier must declare its actual capabilities: size limits,
+framing/reassembly, ordering, reliability, discovery, addressing, acknowledgments,
+bidirectionality, latency, offline behavior and endpoint/control authentication.
+Adaptation must preserve authenticated content and context; a relay must not need
+content keys merely to forward a record. Define stable record identity and duplicate
+handling across transports without treating a retry as fresh cryptographic output.
+Bound queues and reassembly work; do not assume every carrier supports a live stream,
+return path or prompt membership update.
+
+Group protocol selection must account for asynchronous and heterogeneous delivery.
+If a carrier cannot complete a required security exchange, report that limitation
+or use an explicitly designed alternate path—never silently weaken authentication,
+key updates or confidentiality. Transport independence is an extensibility requirement,
+not a claim that every physical medium supplies identical guarantees.
+
+Expiry applies to participating clients, public servers and relay queues according
+to their defined roles, including checking delayed arrivals before serving them.
+Third-party caches and recipients may retain copies; no carrier can promise remote
+erasure. Transport changes must not bypass expiry or expose exact GPS in routing
+metadata. Source authentication, replay protection and content integrity must not
+rely solely on a particular server connection.
+
 ## 3. Primary flows
 
 ### A. Ask for data at a location
@@ -128,6 +173,24 @@ expose group content. A plain-text client can list/stream these envelopes withou
 being able to understand their protected payloads. Readable GPS/chat/alert content
 requires authorized client-side decryption. Discovery rules, routing identifiers,
 control-message delivery and publish authorization remain open.
+
+### E. Exchange directly and publish through another carrier
+
+1. A client creates a protected record using the current application/security state.
+2. It sends that record to another client over an available carrier, or posts it
+   to a public server; neither route defines the encryption architecture.
+3. A recipient validates framing, supported versions, authenticated context,
+   replay status and expiry before exposing decrypted content.
+4. An authorized relay or client may forward/post the record under the selected
+   distribution policy, preserving protected content and its identity. Possession
+   of ciphertext alone does not necessarily authorize posting it to every server.
+5. When copies arrive through multiple routes, duplicate handling and any delivery
+   acknowledgments follow explicit semantics. Receipt is not proof of decryption,
+   human reading, or durable storage.
+
+Carrier and record contracts must specify control-message delivery and what occurs
+when an offline receiver lacks the state needed to decrypt. No automatic fallback
+to plaintext or static shared keys is permitted.
 
 ## 4. Android application
 
@@ -243,6 +306,9 @@ Before implementation, produce:
 7. Acceptance scenarios and unresolved limitations for review.
 8. A versioning and encryption-migration plan, including old clients, offline
    members, legacy history and downgrade prevention. Selection remains revisable.
+9. A carrier-independent record/delivery contract, capability matrix for initial
+   carriers, and client-to-client plus public-server flow examples. Initial carrier
+   selection must not become a permanent restriction on transport.
 
 Keep research, specifications and future diagrams inside `oag-location-to-legacy/`.
 Use existing OAG implementation evidence when investigating integration, but do not
@@ -270,6 +336,12 @@ Record source versions and distinguish proposed mechanisms from implemented ones
 - The Android client handles permission refusal, network loss, background suspension
   and expired records without silently exposing location or group secrets.
 - Retention and revocation tests match the actual guarantees, not stronger promises.
+- The same protected record can traverse distinct implemented carrier paths without
+  changing its application meaning or requiring relay access to plaintext/keys.
+- Direct client exchange does not require the public server as an intermediary;
+  posting/retrieval on public servers remains a separately supported flow.
+- Cross-carrier duplicates, delayed expired arrivals, unsupported capabilities and
+  missing group updates have defined outcomes without insecure fallback.
 
 ## 10. Decisions for the next conversation
 

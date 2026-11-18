@@ -21,6 +21,11 @@ Protect location and group-key privacy. Use synthetic examples, never real user
 locations, credentials or group secrets. Public ciphertext is not public plaintext.
 Service expiry cannot guarantee deletion of copies or keys retained by recipients.
 
+Transport can be anything. Preserve direct client exchange and public-server
+posting as first-class flows; never equate the public text interface with a
+mandatory universal transport. Document carrier limitations without weakening
+application security, and keep transport choices separate from encryption choices.
+
 This baseline authorizes specification work, not deployment or implementation.
 Record research sources, versions, limitations and unanswered questions honestly.
 

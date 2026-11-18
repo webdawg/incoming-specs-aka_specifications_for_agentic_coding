@@ -7,6 +7,11 @@ enables local decryption. Forward secrecy and recovery after compromise are secu
 goals; the encryption protocol and architecture remain revisable. Records have a
 limited serving lifetime whose exact semantics remain to be decided.
 
+**Transport can be anything:** direct client-to-client exchange and posting to
+public servers are both in scope. The public text feed is one interface, not a
+restriction on carriers or a mandatory intermediary. See the verbatim transport
+directive and the governing transport requirements in the specification.
+
 ## Documents
 
 - [OPERATOR-INTENT.md](OPERATOR-INTENT.md) — original description, verbatim.

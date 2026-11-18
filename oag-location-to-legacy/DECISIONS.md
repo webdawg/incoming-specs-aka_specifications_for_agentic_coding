@@ -6,6 +6,11 @@ that any mechanism has been implemented or validated.
 
 ## Established direction
 
+- Transport can be anything: direct client exchange and posting to public servers
+  are both required. The exact directive is appended verbatim in
+  `OPERATOR-INTENT.md`. Neither HTTPS nor the public text feed is a mandatory
+  universal carrier; implementations must describe their actual capabilities.
+
 - Payloads are actually encrypted. Appropriate key material allows recipients to
   decrypt the matching GPS coordinates, chats and alerts.
 - The public site remains text-based: it carries encoded group ciphertext, not

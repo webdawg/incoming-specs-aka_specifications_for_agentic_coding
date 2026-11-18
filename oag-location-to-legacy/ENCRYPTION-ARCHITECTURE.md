@@ -56,9 +56,11 @@ and exposure of every field before selecting representations.
 - **Replay and state safety:** define duplicate, stale, reordered and forked state
   handling, including restored backups and nonce reuse hazards.
 
-HTTPS remains necessary for client/service communication even when payloads are
-end-to-end encrypted. Payload encryption does not hide all metadata, authenticate
-the service endpoint, or protect control operations on its own.
+No transport is mandated. Payload encryption does not hide all metadata,
+authenticate a service endpoint, or protect control operations on its own. Define
+appropriate endpoint and control-channel authentication for each carrier; for web
+interfaces use HTTPS, but do not make HTTPS a prerequisite for direct, offline,
+radio or other non-web delivery. Preserve application security across carriers.
 
 ## 4. Proposed separation of responsibilities
 
@@ -74,9 +76,11 @@ RPCs, plugins or an assurance that protocols can be swapped without redesign.
    device protection. Records protocol identity and supports safe updates/recovery.
 4. **Delivery envelope:** bounded public representation carrying routing and
    delivery information plus opaque protected content/control messages.
-5. **Transport and service storage:** accepts, indexes, streams and expires envelopes
-   without decrypting application payloads. Applies publish authorization, quotas
-   and other metadata-level policies independently of content secrecy.
+5. **Carriers and delivery:** exchange protected records directly between clients,
+   through relays, or with public servers without decrypting application payloads.
+   Carrier framing is separate from the security protocol and public text encoding.
+   Optional server storage indexes, streams and expires envelopes; posting policy,
+   quotas and other metadata controls remain separate from content secrecy.
 6. **User interface:** displays group membership and security state, shares access,
    and explains failures without exposing secret material or implying unsupported
    security guarantees.
@@ -94,7 +98,10 @@ implementations released through normal software updates may be sufficient.
 
 ## 5. Public text envelope and metadata
 
-The public feed carries printable serialized envelopes, not decrypted GPS. Possible
+The public feed carries printable serialized envelopes, not decrypted GPS.
+This text representation is specific to that interface, not mandatory on all
+carriers. Binary, offline and future transports must preserve the protected record
+and authenticated context without requiring the web representation. Possible
 fields include envelope version, crypto-protocol identifier, opaque routing
 reference, record ID, delivery timestamp, serving deadline and encoded protected
 payload. These are candidates, not a wire schema; minimize fields and justify each
